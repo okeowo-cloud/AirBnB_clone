@@ -11,12 +11,19 @@ from uuid import uuid4
 class BaseModel:
     """ Defines a base class for other classes """
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         """ Initialize a base model """
 
-        self.id = str(uuid4())
-        self.created_at = datetime.now()
-        self.updated_at = datetime.now()
+        if not kwargs:
+            self.id = str(uuid4())
+            self.created_at = datetime.now()
+            self.updated_at = datetime.now()
+        else:
+            for key in kwargs:
+                if key in ['created_at', 'updated_at']:
+                    setattr(self, key, datetime.fromisoformat(kwargs[key]))
+                elif key != '__class__':
+                    setattr(self, key, kwargs[key])
 
     def save(self):
         """ update "updated_at" to recent time object was modified """
