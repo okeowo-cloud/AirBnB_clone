@@ -4,8 +4,10 @@ Module base_model
 Class defines all common attributes or methods for other classes
 """
 
+from ast import arg
 from datetime import datetime
 from uuid import uuid4
+from models import storage
 
 
 class BaseModel:
@@ -18,6 +20,7 @@ class BaseModel:
             self.id = str(uuid4())
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
+            storage.new(self)
         else:
             for key in kwargs:
                 if key in ['created_at', 'updated_at']:
@@ -28,7 +31,8 @@ class BaseModel:
     def save(self):
         """ update "updated_at" to recent time object was modified """
         self.updated_at = datetime.now()
-
+        storage.save()
+        
     def to_dict(self):
         """
         dictionary representation of base object
