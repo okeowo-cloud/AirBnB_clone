@@ -5,6 +5,7 @@ import sys
 import shlex
 import json
 from models.base_model import BaseModel
+from models.user import User
 from models import storage
 
 
@@ -12,7 +13,8 @@ class HBNBCommand(cmd.Cmd):
     prompt = "(hbnb)"
 
     class_dict = {
-            "BaseModel": BaseModel
+            "BaseModel": BaseModel,
+            "User": User
             }
 
     def do_quit(self, arg):
@@ -28,7 +30,10 @@ class HBNBCommand(cmd.Cmd):
         return True
 
     def do_create(self, arg):
-        """Create a new instance of BaseModel, saves it to Json file"""
+        """
+        Create a new instance of a class, saves it to Json file
+        Usage: create <class name>
+        """
         arg_list = shlex.split(arg)
         if len(arg_list) < 1:
             print("** class name missing **")
@@ -42,8 +47,14 @@ class HBNBCommand(cmd.Cmd):
             print("** class doesn't exist **")
 
     def do_all(self, arg):
-        """ Prints all string representation of all instances
-        based or not on the class name."""
+        """ 
+        Prints all string representation of all instances
+        based or not on the class name.
+        Ex: all BaseModel or all
+
+        Usage:(1) all
+              (2) all <class name>
+        """
         storage.reload()
         obj_list = []
         objects = storage.all()
