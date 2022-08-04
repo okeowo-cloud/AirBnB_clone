@@ -60,12 +60,13 @@ class HBNBCommand(cmd.Cmd):
             print("** instance id missing **")
             return
 
-        for k, v in stored_obj.items():
-            if arg_list[1] in k and arg_list[0] in k:
-                print(v)
-            else:
-                print("** no instance found **")
-                return
+        key = arg_list[0] + "." + arg_list[1]
+        try:
+            stored_obj[key]
+        except KeyError:
+            print("** no instance found **")
+            return
+        print(str(stored_obj[key]))
 
     def do_destroy(self, arg):
         """Deletes an instance based on the class name and id"""
@@ -75,6 +76,7 @@ class HBNBCommand(cmd.Cmd):
 
         if len(arg_list) < 1:
             print("** class name missing **")
+            return
             
         if arg_list[0] not in HBNBCommand.class_dict.keys():
             print("** class doesn't exist **")
@@ -84,13 +86,14 @@ class HBNBCommand(cmd.Cmd):
             print("** instance id missing **")
             return
 
-        for k in stored_obj.keys():
-            if arg_list[1] not in k and arg_list[0] not in k:
-                print("** no instance found **")
-                return
-            to_del = stored_obj[k]
-            del(to_del)
-            storage.save()
+        key = arg_list[0] + "." + arg_list[1]
+        try:
+            stored_obj[key]
+        except KeyError:
+            print("** no instance found **")
+            return
+        del stored_obj[key]
+        storage.save()
 
     def do_all(self, arg):
         """ Prints all string representation of all instances
