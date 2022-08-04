@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""console module for entry into the command interpreter"""
+"""Console module for entry into the command interpreter"""
 import cmd
 import sys
 import shlex
@@ -45,6 +45,60 @@ class HBNBCommand(cmd.Cmd):
             print(obj.id)
         else:
             print("** class doesn't exist **")
+
+    def do_show(self, arg):
+        """Print the string representation of an instance based on class name
+        and id"""
+        storage.reload()
+        stored_obj = storage.all()
+        arg_list = shlex.split(arg)
+
+        if len(arg_list) < 1:
+            print("** class name missing **")
+            return
+
+        if arg_list[0] not in HBNBCommand.class_dict.keys():
+            print("** class doesn't exist **")
+            return
+
+        if len(arg_list) == 1:
+            print("** instance id missing **")
+            return
+
+        key = arg_list[0] + "." + arg_list[1]
+        try:
+            stored_obj[key]
+        except KeyError:
+            print("** no instance found **")
+            return
+        print(str(stored_obj[key]))
+
+    def do_destroy(self, arg):
+        """Deletes an instance based on the class name and id"""
+
+        arg_list = shlex.split(arg)
+        stored_obj = storage.all()
+
+        if len(arg_list) < 1:
+            print("** class name missing **")
+            return
+
+        if arg_list[0] not in HBNBCommand.class_dict.keys():
+            print("** class doesn't exist **")
+            return
+
+        if len(arg_list) == 1:
+            print("** instance id missing **")
+            return
+
+        key = arg_list[0] + "." + arg_list[1]
+        try:
+            stored_obj[key]
+        except KeyError:
+            print("** no instance found **")
+            return
+        del stored_obj[key]
+        storage.save()
 
     def do_all(self, arg):
         """ 
