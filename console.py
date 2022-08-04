@@ -41,6 +41,56 @@ class HBNBCommand(cmd.Cmd):
         else:
             print("** class doesn't exist **")
 
+    def do_show(self, arg):
+        """Print the string representation of an instance based on class name
+        and id"""
+        storage.reload()
+        stored_obj = storage.all()
+        arg_list = shlex.split(arg)
+
+        if len(arg_list) < 1:
+            print("** class name missing **")
+            
+        elif arg_list[0] not in HBNBCommand.class_dict.keys():
+            print("** class doesn't exist **")
+
+        elif len(arg_list) == 1:
+            print("** instance id missing **")
+
+        for k, v in stored_obj.items():
+            if arg_list[1] not in k and arg_list[0] not in k:
+                print("** no instance found **")
+                
+        else:
+            print(v)
+
+    def do_destroy(self, arg):
+        """Deletes an instance based on the class name and id"""
+
+        arg_list = shlex.split(arg)
+        stored_obj = storage.all()
+
+        if len(arg_list) < 1:
+            print("** class name missing **")
+            return
+            
+        elif arg_list[0] not in HBNBCommand.class_dict.keys():
+            print("** class doesn't exist **")
+            return
+
+        elif len(arg_list) == 1:
+            print("** instance id missing **")
+            return
+
+        for k in stored_obj.keys():
+            to_del = stored_obj[k]
+            if arg_list[1] not in k and arg_list[0] not in k:
+                print("** no instance found **")
+                
+        else:
+            del(to_del)
+            storage.save()
+
     def do_all(self, arg):
         """ Prints all string representation of all instances
         based or not on the class name."""
