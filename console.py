@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""console module for entry into the command interpreter"""
+"""Console module for entry into the command interpreter"""
 import cmd
 import sys
 import shlex
