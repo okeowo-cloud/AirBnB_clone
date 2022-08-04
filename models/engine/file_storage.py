@@ -33,10 +33,20 @@ class FileStorage:
         """Deserializes/load the json_file to objects"""
         from models.base_model import BaseModel
         from models.user import User
+        from models.state import State
+        from models.city import City
+        from models.amenity import Amenity
+        from models.place import Place
+        from models.review import Review
 
         my_dict = {
                 "BaseModel": BaseModel,
-                "User": User
+                "User": User,
+                "State": State,
+                "City": City,
+                "Amenity": Amenity,
+                "Place": Place,
+                "Review": Review
                 }
         if not os.path.isfile(self.__file_path):
             return
