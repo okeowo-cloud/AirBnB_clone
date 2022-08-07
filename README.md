@@ -9,7 +9,10 @@ The console is the first segment of the AirBnB project that will collectively co
 * Destroy an object
 
 ## Table of Contents
-
+* [Environment](#environment)
+* [Installation](#installation)
+* [File Descriptions](#file-descriptions)
+* [Authors](#authors)
 ## Environment
 This project is interpreted/tested on Ubuntu 20.04 LTS using python3(version 3.8.5)
 
