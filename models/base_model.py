@@ -14,7 +14,7 @@ class BaseModel:
 
     def __init__(self, *args, **kwargs):
         """ Initialize a base model """
-
+        dtf = "%Y-%m-%dT%H:%M:%S.%f"
         if not kwargs:
             self.id = str(uuid4())
             self.created_at = datetime.now()
@@ -23,7 +23,7 @@ class BaseModel:
         else:
             for key in kwargs:
                 if key in ['created_at', 'updated_at']:
-                    setattr(self, key, datetime.fromisoformat(kwargs[key]))
+                    setattr(self, key, datetime.strptime(kwargs[key], dtf))
                 elif key != '__class__':
                     setattr(self, key, kwargs[key])
 
