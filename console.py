@@ -134,7 +134,25 @@ class HBNBCommand(cmd.Cmd):
         for key, value in objects.items():
             if arg_list[0] in key:
                 obj_list.append(str(value))
-            print(json.dumps(obj_list))
+        print(json.dumps(obj_list))
+
+    def do_count(self, arg):
+        """ count the number of objects of a particulasr class instance"""
+        storage.reload()
+        obj = storage.all()
+        args = shlex.split(arg)
+        if len(args) < 1:
+            print("** class name missing **")
+            return
+        if args[0] not in HBNBCommand.class_dict.keys():
+            print("** class doesn't exist **")
+            return
+
+        count = 0
+        for key in obj:
+            if args[0] in key:
+                count += 1
+        print(count)
 
     def do_update(self, arg):
         """
@@ -158,24 +176,92 @@ class HBNBCommand(cmd.Cmd):
             return
         storage.reload()
         objects = storage.all()
+        print(arg_list[1])
         key = arg_list[0] + "." + arg_list[1]
         try:
             objects[key]
         except KeyError:
+            print(key)
             print("** no instance found **")
             return
         if arg_len == 2:
             print("** attribute name missing **")
             return
-        if arg_len == 3:
-            print("** value missing **")
-            return
+        try:
+            eval(arg_list[2])
+        except NameError:
+            if arg_len == 3:
+                print("** value missing **")
+                return
         obj_dict = objects[key].__dict__
+        if type(eval(arg_list[2])) == dict:
+            for key in eval(arg_list[2]):
+                if key in obj_dict.keys():
+                    obj_dict[key] = type(obj_dict[key])(eval(arg_list[2])[key])
+                else:
+                    try:
+                        obj_dict[key] = int(eval(arg_list[2])[key])
+                    except ValueError:
+                        obj_dict[key] = eval(arg_list[2])[key]
+            storage.save()
+            return
         if arg_list[2] in obj_dict.keys():
             obj_dict[arg_list[2]] = type(obj_dict[arg_list[2]])(arg_list[3])
         else:
-            obj_dict[arg_list[2]] = arg_list[3]
+            try:
+                obj_dict[arg_list[2]] = int(arg_list[3])
+            except ValueError:
+                obj_dict[arg_list[2]] = arg_list[3]
         storage.save()
+
+    def default(self, args):
+        """defines action on objects using -
+        <class name>.all() : retrieves all object of specified class name
+        """
+        cmd_dict = {
+                "all": self.do_all,
+                "count": self.do_count,
+                "show": self.do_show,
+                "destroy": self.do_destroy,
+                "update": self.do_update
+                }
+        arg = args.strip()
+        val = arg.split(".")
+        if len(val) != 2:
+            cmd.Cmd.default(self, args)
+            return
+        class_name = val[0]
+        method_call = val[1].split("(")[0]
+        var = ""
+        try:
+            var = val[1].split("(")[1][-2]
+        except IndexError:
+            pass
+        if var == "}":
+            try:
+                a = val[1].split("(")[1][:-1].split("{")
+                print(a)
+                id_string = a[0][1:-3]
+                dict_obj = "{" + a[1]
+                copy = id_string + " " + "'" + dict_obj.replace("'", '"', -1) + "'"
+                print(copy)
+                if method_call == "update":
+                    cmd_dict[method_call](class_name + " " + copy)
+                print("i am in the try block")
+                return
+            except IndexError:
+                pass
+        elif method_call == "update" and len(val[1].split("(")[1][:-1]) > 1:
+            params = val[1].split("(")[1][:-1].split(",")
+            line = "".join(params)[:]
+            print(line)
+            cmd_dict[method_call](class_name + " " + line)
+        elif len(val[1].split("(")[1][:-1]) > 1:
+            if method_call in cmd_dict.keys():
+                cmd_dict[method_call](class_name + " " + val[1].split("(")[1][:-1])
+        else:
+            if method_call in cmd_dict.keys():
+                cmd_dict[method_call](class_name)
 
 
 if __name__ == '__main__':

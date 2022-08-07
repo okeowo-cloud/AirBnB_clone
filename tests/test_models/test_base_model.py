@@ -34,12 +34,13 @@ class TestBaseModel(unittest.TestCase):
         self.assertEqual(instance.number, 89)
 
     def test_datetime_attr(self):
-        """Test that two BaseModel instances have different datetime objects
-        and have similar updated_at and created_at if created at the same time"""
+        """Test BaseModel instances have similar updated_at and created_at at creation
+        and different updated_at after save(update).
+        """
         obj = BaseModel()
         self.assertTrue(obj.created_at, obj.updated_at)
         obj.save()
-        self.assertFalse(obj.created_at, obj.updated_at)
+        self.assertNotEqual(obj.created_at, obj.updated_at)
 
     def test_uuid(self):
         """Test that id is a valid uuid"""
