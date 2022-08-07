@@ -15,6 +15,7 @@ from models import storage
 
 
 class HBNBCommand(cmd.Cmd):
+    """Command Interpreter class for Airbnb"""
     prompt = "(hbnb) "
 
     class_dict = {
