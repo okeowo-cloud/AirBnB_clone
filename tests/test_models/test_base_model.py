@@ -34,7 +34,8 @@ class TestBaseModel(unittest.TestCase):
         self.assertEqual(instance.number, 89)
 
     def test_datetime_attr(self):
-        """Test BaseModel instances have similar updated_at and created_at at creation
+        """Test BaseModel instances have similar
+        updated_at and created_at at creation
         and different updated_at after save(update).
         """
         obj = BaseModel()
@@ -50,13 +51,13 @@ class TestBaseModel(unittest.TestCase):
             uuid = inst.id
             with self.subTest(uuid=uuid):
                 self.assertIs(type(uuid), str)
-                self.assertRegex(uuid,
-                                    '^[0-9a-f]{8}-[0-9a-f]{4}'
-                                    '-[0-9a-f]{4}-[0-9a-f]{4}'
-                                    '-[0-9a-f]{12}$'
-                )
+                self.assertRegex(
+                        uuid,
+                        '^[0-9a-f]{8}-[0-9a-f]{4}'
+                        '-[0-9a-f]{4}-[0-9a-f]{4}'
+                        '-[0-9a-f]{12}$')
         self.assertNotEqual(instance1.id, instance2.id)
-    
+
     def test_to_dict(self):
         """Test conversion of object attributes to dictionary for json"""
         my_model = BaseModel()
@@ -82,8 +83,12 @@ class TestBaseModel(unittest.TestCase):
         self.assertEqual(new_d["__class__"], "BaseModel")
         self.assertEqual(type(new_d["created_at"]), str)
         self.assertEqual(type(new_d["updated_at"]), str)
-        self.assertEqual(new_d["created_at"], base_model.created_at.strftime(time_format))
-        self.assertEqual(new_d["updated_at"], base_model.updated_at.strftime(time_format))
+        self.assertEqual(
+                new_d["created_at"],
+                base_model.created_at.strftime(time_format))
+        self.assertEqual(
+                new_d["updated_at"],
+                base_model.updated_at.strftime(time_format))
 
     def test_str(self):
         """Test that the str methof has correct output"""

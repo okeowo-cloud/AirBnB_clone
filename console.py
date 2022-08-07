@@ -15,7 +15,7 @@ from models import storage
 
 
 class HBNBCommand(cmd.Cmd):
-    prompt = "(hbnb)"
+    prompt = "(hbnb) "
 
     class_dict = {
             "BaseModel": BaseModel,
@@ -176,12 +176,10 @@ class HBNBCommand(cmd.Cmd):
             return
         storage.reload()
         objects = storage.all()
-        print(arg_list[1])
         key = arg_list[0] + "." + arg_list[1]
         try:
             objects[key]
         except KeyError:
-            print(key)
             print("** no instance found **")
             return
         if arg_len == 2:
@@ -194,25 +192,31 @@ class HBNBCommand(cmd.Cmd):
                 print("** value missing **")
                 return
         obj_dict = objects[key].__dict__
-        if type(eval(arg_list[2])) == dict:
-            for key in eval(arg_list[2]):
-                if key in obj_dict.keys():
-                    obj_dict[key] = type(obj_dict[key])(eval(arg_list[2])[key])
-                else:
-                    try:
-                        obj_dict[key] = int(eval(arg_list[2])[key])
-                    except ValueError:
-                        obj_dict[key] = eval(arg_list[2])[key]
+        try:
+            eval(arg_list[2])
+        except NameError:
+            if arg_list[2] in obj_dict.keys():
+                obj_dict[arg_list[2]] = type(
+                        obj_dict[arg_list[2]])(arg_list[3])
+            else:
+                try:
+                    obj_dict[arg_list[2]] = int(arg_list[3])
+                except ValueError:
+                    obj_dict[arg_list[2]] = arg_list[3]
             storage.save()
             return
-        if arg_list[2] in obj_dict.keys():
-            obj_dict[arg_list[2]] = type(obj_dict[arg_list[2]])(arg_list[3])
-        else:
-            try:
-                obj_dict[arg_list[2]] = int(arg_list[3])
-            except ValueError:
-                obj_dict[arg_list[2]] = arg_list[3]
-        storage.save()
+        if type(eval(arg_list[2])) == dict:
+            dict_kwarg = eval(arg_list[2])
+            for key in dict_kwarg:
+                if key in obj_dict.keys():
+                    obj_dict[key] = type(obj_dict[key])(dict_kwarg[key])
+                else:
+                    try:
+                        obj_dict[key] = int(dict_kwarg[key])
+                    except ValueError:
+                        obj_dict[key] = dict_kwarg[key]
+            storage.save()
+            return
 
     def default(self, args):
         """defines action on objects using -
@@ -240,25 +244,22 @@ class HBNBCommand(cmd.Cmd):
         if var == "}":
             try:
                 a = val[1].split("(")[1][:-1].split("{")
-                print(a)
-                id_string = a[0][1:-3]
+                _id = a[0][1:-3]
                 dict_obj = "{" + a[1]
-                copy = id_string + " " + "'" + dict_obj.replace("'", '"', -1) + "'"
-                print(copy)
+                copy = _id + " " + "'" + dict_obj.replace("'", '"', -1) + "'"
                 if method_call == "update":
                     cmd_dict[method_call](class_name + " " + copy)
-                print("i am in the try block")
                 return
             except IndexError:
                 pass
         elif method_call == "update" and len(val[1].split("(")[1][:-1]) > 1:
             params = val[1].split("(")[1][:-1].split(",")
             line = "".join(params)[:]
-            print(line)
             cmd_dict[method_call](class_name + " " + line)
         elif len(val[1].split("(")[1][:-1]) > 1:
             if method_call in cmd_dict.keys():
-                cmd_dict[method_call](class_name + " " + val[1].split("(")[1][:-1])
+                p = val[1].split("(")[1][:-1]
+                cmd_dict[method_call](class_name + " " + p)
         else:
             if method_call in cmd_dict.keys():
                 cmd_dict[method_call](class_name)
